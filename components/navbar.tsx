@@ -69,7 +69,7 @@ export function Navbar() {
           </Link>
 
           <Link
-            href="/get-started"
+            href="/sign-up"
             className={cn(
               buttonVariants(),
               "ml-4 hidden h-10 rounded-[10px] bg-[#5b4bf5] px-4 text-sm font-medium text-white hover:bg-[#4f41e0] sm:ml-8 sm:h-[50px] sm:px-6 sm:text-[16px] lg:inline-flex"
@@ -145,7 +145,7 @@ export function Navbar() {
                   Sign In
                 </Link>
                 <Link
-                  href="/get-started"
+                  href="/sign-up"
                   onClick={() => setOpen(false)}
                   className={cn(
                     buttonVariants(),
