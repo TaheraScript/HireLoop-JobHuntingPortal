@@ -9,11 +9,20 @@ import { Label } from "@/components/ui/label"
 
 export type AuthMode = "sign-in" | "sign-up"
 
+export type UserRole = "seeker" | "recruiter" | "admin"
+
 export type AuthFormData = {
   name?: string
   email: string
   password: string
+  role?: UserRole
 }
+
+const roles: { value: UserRole; label: string }[] = [
+  { value: "seeker", label: "Job Seeker" },
+  { value: "recruiter", label: "Recruiter" },
+  { value: "admin", label: "Admin" },
+]
 
 const copy = {
   "sign-in": {
@@ -58,6 +67,7 @@ export function AuthForm({
     const email = String(formData.get("email") ?? "")
     const password = String(formData.get("password") ?? "")
     const confirmPassword = String(formData.get("confirmPassword") ?? "")
+    const role = String(formData.get("role") ?? "seeker") as UserRole
 
     if (mode === "sign-up" && password !== confirmPassword) {
       setError("Passwords do not match.")
@@ -66,7 +76,7 @@ export function AuthForm({
 
     setLoading(true)
     try {
-      const message = await onSubmit?.({ name, email, password })
+      const message = await onSubmit?.({ name, email, password, role })
       if (message) setError(message)
     } catch {
       setError("Something went wrong. Please try again.")
@@ -107,6 +117,30 @@ export function AuthForm({
                   className={inputClassName}
                 />
               </div>
+            )}
+
+            {mode === "sign-up" && (
+              <fieldset className="space-y-2">
+                <legend className="mb-2 text-sm leading-none font-medium text-[#d4d4d8]">
+                  I am a
+                </legend>
+                <div className="grid grid-cols-3 gap-2">
+                  {roles.map((role) => (
+                    <label key={role.value} className="cursor-pointer">
+                      <input
+                        type="radio"
+                        name="role"
+                        value={role.value}
+                        defaultChecked={role.value === "seeker"}
+                        className="peer sr-only"
+                      />
+                      <span className="flex h-11 items-center justify-center rounded-lg border border-[#2b2b30] bg-[#0b0b0d] text-sm font-medium text-[#a1a1aa] transition-colors peer-checked:border-[#5b4bf5] peer-checked:bg-[#5b4bf5]/10 peer-checked:text-white peer-focus-visible:ring-3 peer-focus-visible:ring-[#5b4bf5]/20 hover:border-[#3a3a42]">
+                        {role.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
             )}
 
             <div className="space-y-2">

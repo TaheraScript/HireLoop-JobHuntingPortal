@@ -9,9 +9,13 @@ const handleSignUp = async(data:AuthFormData) =>{
     name: data.name as string, 
     email: data.email, 
     password: data.password, 
+    role: data.role ?? "seeker",
     callbackURL: "/",
 });
 console.log('sign up response',signUpResponse,error)
+if (error) {
+  return error.message ?? "Could not create your account."
+}
 }
 
   return <AuthForm mode="sign-up" onSubmit={handleSignUp}/>
