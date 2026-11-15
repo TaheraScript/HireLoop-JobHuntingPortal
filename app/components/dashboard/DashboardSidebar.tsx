@@ -1,3 +1,20 @@
+"use client"
+
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import {
+  Bookmark,
+  BriefcaseBusiness,
+  Building2,
+  CreditCard,
+  FileText,
+  LayoutDashboard,
+  type LucideIcon,
+  ReceiptText,
+  Settings,
+  UsersRound,
+} from "lucide-react"
+
 import {
   Sidebar,
   SidebarContent,
@@ -10,20 +27,122 @@ import {
 } from "@/components/ui/sidebar"
 import { useSession } from "@/lib/auth-client"
 
-const menuItemsByRole = {
-        seeker: [
+export type DashboardRole = "seeker" | "recruiter" | "admin"
 
-        ],
-        recruiter: [
+export type DashboardMenuItem = {
+  id: string
+  name: string
+  url: string
+  icon: LucideIcon
+}
 
-        ],
-        admin: [
-            
-        ]
-    }
+const menuItemsByRole: Record<DashboardRole, DashboardMenuItem[]> = {
+  seeker: [
+    {
+      id: "seeker-dashboard",
+      name: "Dashboard",
+      url: "/dashboard/seeker",
+      icon: LayoutDashboard,
+    },
+    { id: "seeker-jobs", name: "Jobs", url: "/jobs", icon: BriefcaseBusiness },
+    {
+      id: "seeker-saved-jobs",
+      name: "Saved Jobs",
+      url: "/saved-jobs",
+      icon: Bookmark,
+    },
+    {
+      id: "seeker-applications",
+      name: "Applications",
+      url: "/applications",
+      icon: FileText,
+    },
+    {
+      id: "seeker-billing",
+      name: "Billing",
+      url: "/billing",
+      icon: CreditCard,
+    },
+    {
+      id: "seeker-settings",
+      name: "Settings",
+      url: "/settings",
+      icon: Settings,
+    },
+  ],
+  recruiter: [
+    {
+      id: "recruiter-dashboard",
+      name: "Dashboard",
+      url: "/dashboard/recruiter",
+      icon: LayoutDashboard,
+    },
+    {
+      id: "recruiter-company",
+      name: "My Company",
+      url: "/company",
+      icon: Building2,
+    },
+    {
+      id: "recruiter-manage-jobs",
+      name: "Manage Jobs",
+      url: "/manage-jobs",
+      icon: BriefcaseBusiness,
+    },
+    {
+      id: "recruiter-applications",
+      name: "Applications",
+      url: "/applications",
+      icon: FileText,
+    },
+    {
+      id: "recruiter-settings",
+      name: "Settings",
+      url: "/settings",
+      icon: Settings,
+    },
+  ],
+  admin: [
+    {
+      id: "admin-dashboard",
+      name: "Dashboard",
+      url: "/dashboard/admin",
+      icon: LayoutDashboard,
+    },
+    { id: "admin-users", name: "Users", url: "/users", icon: UsersRound },
+    {
+      id: "admin-companies",
+      name: "Companies",
+      url: "/companies",
+      icon: Building2,
+    },
+    {
+      id: "admin-jobs",
+      name: "Jobs",
+      url: "/jobs",
+      icon: BriefcaseBusiness,
+    },
+    {
+      id: "admin-payments",
+      name: "Payments",
+      url: "/payments",
+      icon: ReceiptText,
+    },
+    {
+      id: "admin-settings",
+      name: "Settings",
+      url: "/settings",
+      icon: Settings,
+    },
+  ],
+}
+
 export function DashboardSidebar() {
-    const {data: session} = useSession()
-    const role = session?.user?.role || 'seeker'
+  const { data: session } = useSession()
+  const pathname = usePathname()
+
+  const role = (session?.user?.role ?? "seeker") as DashboardRole
+  const menuItems = menuItemsByRole[role] ?? menuItemsByRole.seeker
 
   return (
     <Sidebar>
@@ -31,17 +150,18 @@ export function DashboardSidebar() {
       <SidebarContent>
         <SidebarGroup />
         <SidebarMenu>
-  {
-//   menuItemsByRole[role].map((item) => (
-//     <SidebarMenuItem key={item.id}>
-//       <SidebarMenuButton render={<a href={item.url} />}>
-//         <item.icon />
-//         <span>{item.name}</span>
-//       </SidebarMenuButton>
-//     </SidebarMenuItem>
-//   ))
-  }
-</SidebarMenu>
+          {menuItems.map((item) => (
+            <SidebarMenuItem key={item.id}>
+              <SidebarMenuButton
+                isActive={pathname === item.url}
+                render={<Link href={item.url} />}
+              >
+                <item.icon />
+                <span>{item.name}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
         <SidebarGroup />
       </SidebarContent>
       <SidebarFooter />
