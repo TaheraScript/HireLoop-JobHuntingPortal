@@ -1,7 +1,10 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import Link from "next/link"
+import type { LucideIcon } from "lucide-react"
+import { BriefcaseBusiness, ShieldCheck, UserRound } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,10 +21,10 @@ export type AuthFormData = {
   role?: UserRole
 }
 
-const roles: { value: UserRole; label: string }[] = [
-  { value: "seeker", label: "Job Seeker" },
-  { value: "recruiter", label: "Recruiter" },
-  { value: "admin", label: "Admin" },
+const roles: { value: UserRole; label: string; icon: LucideIcon }[] = [
+  { value: "seeker", label: "Job Seeker", icon: UserRound },
+  { value: "recruiter", label: "Recruiter", icon: BriefcaseBusiness },
+  { value: "admin", label: "Admin", icon: ShieldCheck },
 ]
 
 const copy = {
@@ -93,6 +96,21 @@ export function AuthForm({
       />
 
       <div className="relative z-10 w-full max-w-md">
+        <Link
+          href="/"
+          aria-label="hireloop home"
+          className="mb-6 flex justify-center"
+        >
+          <Image
+            src="/logo.png"
+            alt="hireloop"
+            width={154}
+            height={44}
+            priority
+            className="h-10 w-auto"
+          />
+        </Link>
+
         <div className="rounded-2xl border border-[#26262c] bg-[#101012]/95 p-6 shadow-[0_30px_100px_-40px_rgba(91,75,245,0.45)] sm:p-8">
           <div className="mb-7 text-center">
             <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
@@ -124,18 +142,19 @@ export function AuthForm({
                 <legend className="mb-2 text-sm leading-none font-medium text-[#d4d4d8]">
                   I am a
                 </legend>
-                <div className="grid grid-cols-3 gap-2">
-                  {roles.map((role) => (
-                    <label key={role.value} className="cursor-pointer">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {roles.map(({ value, label, icon: Icon }) => (
+                    <label key={value} className="cursor-pointer">
                       <input
                         type="radio"
                         name="role"
-                        value={role.value}
-                        defaultChecked={role.value === "seeker"}
+                        value={value}
+                        defaultChecked={value === "seeker"}
                         className="peer sr-only"
                       />
-                      <span className="flex h-11 items-center justify-center rounded-lg border border-[#2b2b30] bg-[#0b0b0d] text-sm font-medium text-[#a1a1aa] transition-colors peer-checked:border-[#5b4bf5] peer-checked:bg-[#5b4bf5]/10 peer-checked:text-white peer-focus-visible:ring-3 peer-focus-visible:ring-[#5b4bf5]/20 hover:border-[#3a3a42]">
-                        {role.label}
+                      <span className="flex h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-[#2b2b30] bg-[#0b0b0d] px-2 text-[13px] font-medium whitespace-nowrap text-[#a1a1aa] transition-colors peer-checked:border-[#5b4bf5] peer-checked:bg-[#5b4bf5]/10 peer-checked:text-white peer-focus-visible:ring-3 peer-focus-visible:ring-[#5b4bf5]/20 hover:border-[#3a3a42] sm:text-sm">
+                        <Icon className="size-4 shrink-0" aria-hidden="true" />
+                        <span>{label}</span>
                       </span>
                     </label>
                   ))}

@@ -3,8 +3,10 @@
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { MenuIcon, XIcon } from "lucide-react"
 
+import { authClient } from "@/lib/auth-client"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Sheet,
@@ -25,6 +27,24 @@ const navLinks = [
 
 export function Navbar() {
   const [open, setOpen] = React.useState(false)
+  const router = useRouter()
+  const { data: session } = authClient.useSession()
+
+  React.useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)")
+    const closeOnDesktop = () => {
+      if (desktop.matches) setOpen(false)
+    }
+
+    desktop.addEventListener("change", closeOnDesktop)
+    return () => desktop.removeEventListener("change", closeOnDesktop)
+  }, [])
+
+  async function handleSignOut() {
+    await authClient.signOut()
+    setOpen(false)
+    router.refresh()
+  }
 
   return (
     <header className="bg-[#131313] px-4 pt-[38px] pb-[19px] sm:px-6 lg:px-[49px]">
@@ -58,25 +78,45 @@ export function Navbar() {
 
           <span
             aria-hidden="true"
-            className="ml-3 mr-9 hidden h-[22px] w-px bg-[#3a3a3a] lg:block"
+            className="mr-9 ml-3 hidden h-[22px] w-px bg-[#3a3a3a] lg:block"
           />
 
-          <Link
-            href="/sign-in"
-            className="hidden text-[16px] font-medium text-[#7b6cff] transition-colors hover:text-[#9a8dff] lg:block"
-          >
-            Sign In
-          </Link>
+          {session?.user ? (
+            <>
+              <span className="hidden max-w-[240px] items-center gap-1.5 text-sm text-[#a1a1aa] lg:flex">
+                Welcome,
+                <span className="truncate font-medium text-white">
+                  {session.user.name}
+                </span>
+              </span>
+              <Button
+                variant="ghost"
+                onClick={handleSignOut}
+                className="ml-4 hidden h-9 text-[#a1a1aa] hover:bg-white/5 hover:text-white md:inline-flex"
+              >
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/sign-in"
+                className="hidden text-[16px] font-medium text-[#7b6cff] transition-colors hover:text-[#9a8dff] md:block"
+              >
+                Sign In
+              </Link>
 
-          <Link
-            href="/sign-up"
-            className={cn(
-              buttonVariants(),
-              "ml-4 hidden h-10 rounded-[10px] bg-[#5b4bf5] px-4 text-sm font-medium text-white hover:bg-[#4f41e0] sm:ml-8 sm:h-[50px] sm:px-6 sm:text-[16px] lg:inline-flex"
-            )}
-          >
-            Get Started
-          </Link>
+              <Link
+                href="/sign-up"
+                className={cn(
+                  buttonVariants(),
+                  "ml-4 hidden h-10 rounded-[10px] bg-[#5b4bf5] px-4 text-sm font-medium text-white hover:bg-[#4f41e0] sm:ml-8 sm:h-[50px] sm:px-6 sm:text-[16px] md:inline-flex"
+                )}
+              >
+                Get Started
+              </Link>
+            </>
+          )}
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
@@ -134,26 +174,46 @@ export function Navbar() {
               </div>
 
               <SheetFooter className="mt-auto gap-3 border-t border-[#2a2a2a] p-6">
-                <Link
-                  href="/sign-in"
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    buttonVariants({ variant: "ghost" }),
-                    "h-11 w-full text-base font-medium text-[#7b6cff] hover:bg-white/5 hover:text-[#9a8dff]"
-                  )}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/sign-up"
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    buttonVariants(),
-                    "h-11 w-full rounded-[10px] bg-[#5b4bf5] text-base font-medium text-white hover:bg-[#4f41e0]"
-                  )}
-                >
-                  Get Started
-                </Link>
+                {session?.user ? (
+                  <>
+                    <p className="truncate px-1 text-sm text-[#a1a1aa]">
+                      Signed in as{" "}
+                      <span className="font-medium text-white">
+                        {session.user.name}
+                      </span>
+                    </p>
+                    <Button
+                      variant="ghost"
+                      onClick={handleSignOut}
+                      className="h-11 w-full text-base font-medium text-[#7b6cff] hover:bg-white/5 hover:text-[#9a8dff]"
+                    >
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/sign-in"
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        buttonVariants({ variant: "ghost" }),
+                        "h-11 w-full text-base font-medium text-[#7b6cff] hover:bg-white/5 hover:text-[#9a8dff]"
+                      )}
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/sign-up"
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        buttonVariants(),
+                        "h-11 w-full rounded-[10px] bg-[#5b4bf5] text-base font-medium text-white hover:bg-[#4f41e0]"
+                      )}
+                    >
+                      Get Started
+                    </Link>
+                  </>
+                )}
               </SheetFooter>
             </SheetContent>
           </Sheet>
