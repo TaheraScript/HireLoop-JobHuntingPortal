@@ -19,16 +19,20 @@ import {
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 
-const navLinks = [
-  { label: "Browse Jobs", href: "/jobs" },
-  { label: "Company", href: "/company" },
-  { label: "Pricing", href: "/pricing" },
-]
+
 
 export function Navbar() {
   const [open, setOpen] = React.useState(false)
   const router = useRouter()
   const { data: session } = authClient.useSession()
+
+  const navLinks = [
+  { label: "Browse Jobs", href: "/jobs" },
+  { label: "Company", href: "/company" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Dashboard", href: `/dashboard/${session?.user?.role || "seeker"}` },
+
+]
 
   React.useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1024px)")

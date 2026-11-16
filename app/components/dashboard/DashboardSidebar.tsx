@@ -10,6 +10,7 @@ import {
   FileText,
   LayoutDashboard,
   type LucideIcon,
+  PlusCircle,
   ReceiptText,
   Settings,
   UsersRound,
@@ -86,8 +87,14 @@ const menuItemsByRole: Record<DashboardRole, DashboardMenuItem[]> = {
     {
       id: "recruiter-manage-jobs",
       name: "Manage Jobs",
-      url: "/manage-jobs",
+      url: "/dashboard/recruiter/jobs",
       icon: BriefcaseBusiness,
+    },
+    {
+      id: "recruiter-add-job",
+      name: "Add Job",
+      url: "/dashboard/recruiter/jobs/new",
+      icon: PlusCircle,
     },
     {
       id: "recruiter-applications",
